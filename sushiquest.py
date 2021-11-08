@@ -1,6 +1,6 @@
-from sushi_modules.utilities import Header, Player, option_check
-from sushi_modules.rice_game import RiceGame
-from sushi_modules.insult_game import InsultGame
+from sushi_pkg.utilities import Header, Player, option_check
+from sushi_pkg.rice_game import RiceGame
+from sushi_pkg.insult_game import InsultGame
 
 
 class SushiQuest:
@@ -24,16 +24,18 @@ class SushiQuest:
             f"Type 'q' to quit or type the number of the corresponding "
             f"option.")
         # Show menu - main room A
-        Menu().main_room()
+        gm.main_room()
 
 
 class Menu:
     def __init__(self):
         self.quest_received = False
-        self.talked_nori_hoarder = False
-        self.talked_sushi_eater = False
-        self.talked_rice_fiend = False
-        self.talked_fish_monger = False
+        # self.talked_nori_hoarder = False
+        # self.talked_sushi_eater = False
+        # self.talked_rice_fiend = False
+        # self.talked_fish_monger = False
+        self.talked_NPC = set()
+        self.sushi_lover = False
 
     def main_room(self):
         """Show menu - main room"""
@@ -64,16 +66,16 @@ class Menu:
                    "2": "[2] Talk to the figure on the right.",
                    "3": "[3] Go outside.",
                    "4": "[4] Return to the main room."}
-        if self.talked_nori_hoarder:
+        if "nori_hoarder" in self.talked_NPC:
             options["1"] = "[1] Talk to NORI HOARDER."
-        if self.talked_sushi_eater:
+        if "sushi_eater" in self.talked_NPC:
             options["2"] = "[2] Talk to SUSHI EATER."
         option = option_check(options)
         if option == "1":
-            self.talked_nori_hoarder = NPC().nori_hoarder()
+            NPC().nori_hoarder()
             self.lobby()
         elif option == "2":
-            self.talked_sushi_eater = NPC().sushi_eater()
+            self.sushi_lover = NPC().sushi_eater(self.sushi_lover)
             self.lobby()
         elif option == "3":
             self.outside()
@@ -86,24 +88,23 @@ class Menu:
         options = {"1": "[1] Talk to the figure on the left.",
                    "2": "[2] Talk to the figure on the right.",
                    "3": "[3] Return to the lobby."}
-        if self.talked_rice_fiend:
+        if "rice_fiend" in self.talked_NPC:
             options["1"] = "[1] Talk to RICE FIEND."
-        if self.talked_fish_monger:
+        if "fish_monger" in self.talked_NPC:
             options["2"] = "[2] Talk to FISH MONGER."
         option = option_check(options)
         if option == "1":
             rice_fiend = NPC()
-            self.talked_rice_fiend = rice_fiend.rice_fiend()
+            rice_fiend.rice_fiend()
             self.outside()
         elif option == "2":
-            self.talked_fish_monger = NPC().fish_monger()
+            NPC().fish_monger()
             self.outside()
         else:
             self.lobby()
 
 
 class NPC:
-
     def sushi_chef(self, quest):
         """Talk to SUSHI CHEF."""
         if not quest:
@@ -112,12 +113,12 @@ class NPC:
             print("\nYou walk up to the unknown figure. "
                   "They stare at you for a moment before finally speaking.")
             print("SUSHI CHEF: I am the Sushi Chef. I'm afraid I don't have "
-                  "any sushi to offer you.")
+                  "any sushi to offer you.\n")
             options1 = {"1": f"[1] Ask \"Why not?\""}
             option_check(options1)
             # Dialogue round 2
             print("\nSUSHI CHEF: *Sighs* I'm out of ingredients. "
-                  "Will you gather some for me?")
+                  "Will you gather some for me?\n")
             options2 = {"1": "[1] \"Okay.\"", "2": "[2] \"No.\""}
             while True:
                 option2 = option_check(options2)
@@ -129,7 +130,7 @@ class NPC:
                     # return to menu A2 - main room
                     return quest_received
                 else:
-                    print("\nSUSHI CHEF: Won't you please help me out?")
+                    print("\nSUSHI CHEF: Won't you please help me out?\n")
                     continue
         else:
             # Quest has been received
@@ -148,7 +149,7 @@ class NPC:
                 print("\nSUSHI CHEF: *chops fish*")
                 print("\nSUSHI CHEF: *rolls sushi*")
                 print("\nSUSHI CHEF: Ready to eat the best sushi of your "
-                      "life?.")
+                      "life?.\n")
                 options4 = {"1": "[1] \"Yes! Finally!!\"",
                             "2": "[2] \"Not really, I don't even like "
                                  "sushi...\""}
@@ -157,7 +158,7 @@ class NPC:
                     pass
                 else:
                     print("\nSUSHI CHEF: WHAT DO YOU MEAN YOU DON'T LIKE "
-                          "SUSHI???")
+                          "SUSHI???\n")
                     options5 = {"1": "[1] \"Sheesh, fine, I'll try it.\"",
                                 "2": "[2] \"...\""}
                     while True:
@@ -166,7 +167,8 @@ class NPC:
                             break
                         else:
                             print("\nSUSHI CHEF: You went through all that "
-                                  "just to not eat my sushi? The disrespect!")
+                                  "just to not eat my sushi? The "
+                                  "disrespect!\n")
                             continue
                 print("\nThe SUSHI CHEF sets down a plate of sushi in front "
                       "of you.\nIt is, indeed, the best sushi you've ever "
@@ -176,23 +178,23 @@ class NPC:
             else:
                 # Quest has not yet been fulfilled
                 print(f"\nSUSHI CHEF: Do you take me for a fool, "
-                      f"{game.player_name}? You're still missing something...")
+                      f"{game.player_name}? You're still missing "
+                      f"something...\n")
 
     def nori_hoarder(self):
         """Talk to NORI HOARDER."""
-        talked_nori_hoarder = True
         if "Nori" not in game.inventory:
             # Dialogue round 1
-            print("\nNORI HOARDER: Hey! Hey, you!")
+            print("\nNORI HOARDER: Hey! Hey, you!\n")
             options1 = {"1": "[1] \"...Me?\"", "2": "[2] Run away"}
             option1 = option_check(options1)
-            if option1 == "1":
-                pass
+            if option1 == "2":
+                return False
             else:
-                return talked_nori_hoarder
+                gm.talked_NPC.add("nori_hoarder")
             # Dialogue round 2
             print(f"\nNORI HOARDER: Yeah, you're {game.player_name}, right? "
-                  f"I've got a whole stack of nori. You want some?")
+                  f"I've got a whole stack of nori. You want some?\n")
             options2 = {"1": "[1] \"Okay!\"",
                         "2": "[2] \"How do you know who I am?\""}
             option2 = option_check(options2)
@@ -205,7 +207,7 @@ class NPC:
             else:
                 # Dialogue round 3
                 print("\nNORI HOARDER: Don't worry about it. Do you want "
-                      "some nori or not?")
+                      "some nori or not?\n")
                 options3 = {"1": "[1] \"I guess so.\"",
                             "2": "[2] \"Stay away from me, you creep!\""}
                 option3 = option_check(options3)
@@ -215,51 +217,47 @@ class NPC:
                     nori_idx = game.quest_items.index("Nori")
                     nori = game.quest_items.pop(nori_idx)
                     game.inventory.append(nori)
-            return talked_nori_hoarder
         else:
             # Nori already in player inventory
-            print("\nNORI HOARDER: I've already give you some nori.")
-            return talked_nori_hoarder
+            print("\nNORI HOARDER: I've already given you some nori.")
 
     def rice_fiend(self):
         """Talk to RICE FIEND."""
-        talked_rice_fiend = True
+        gm.talked_NPC.add("rice_fiend")
         if game.games_played["Rice Game"] == 0:
             # Introduce if game hasn't been played yet.
             # Dialogue round 1
             print("\nRICE FIEND: You looking for some rice? I've got a whole "
-                  "wheelbarrow here.")
+                  "wheelbarrow here.\n")
             options1 = {"1": "[1] \"Yeah, can I have some?\"",
                         "2": "[2] \"No thanks\""}
             option1 = option_check(options1)
             if option1 == "2":
-                return talked_rice_fiend
+                return False
             # Dialogue round 2
             print("\nRICE FIEND: I'll give you a sack of rice if you play a "
-                  "game with me.")
+                  "game with me.\n")
             options2 = {"1": "[1] \"A game?\"", "2": "[2] \"I'd rather not.\""}
             option2 = option_check(options2)
             if option2 == "2":
-                return talked_rice_fiend
+                return False
             # Play Rice Game
             self.play_rice_game()
-            return talked_rice_fiend
         else:
             if "Rice" not in game.inventory:
                 # Let player know this is a new sack of rice
                 print("\nRICE FIEND: I've given away that last sack of rice, "
-                      "but here's another if you want to guess again!")
+                      "but here's another if you want to guess again!\n")
                 options3 = {"1": "[1] \"I'll play again\"",
                             "2": "[2] \"I don't think so.\""}
                 option3 = option_check(options3)
                 if option3 == "2":
-                    return talked_rice_fiend
+                    return False
                 # Play Rice Game
                 self.play_rice_game()
             else:
                 # Rice already in player inventory
                 print("\nRICE FIEND: Only one sack of rice per person!")
-            return talked_rice_fiend
 
     def play_rice_game(self):
         """Start Rice Game."""
@@ -273,37 +271,37 @@ class NPC:
 
     def fish_monger(self):
         """Talk to FISH MONGER."""
-        talked_fish_monger = True
+        gm.talked_NPC.add("fish_monger")
         if game.games_played["Insult Game"] == 0:
             # Introduce if game hasn't been played yet.
             # Dialogue round 1
-            print("\nFISH MONGER: *Plays clarinet*")
+            print("\nFISH MONGER: *Plays clarinet*\n")
             options1 = {"1": "[1] \"Um...\"", "2": "[2] Leave"}
             option1 = option_check(options1)
             if option1 == "2":
-                return talked_fish_monger
+                return False
             # Dialogue round 2
-            print("\nFISH MONGER: What do you want from me, oil spill?")
+            print("\nFISH MONGER: What do you want from me, oil spill?\n")
             options2 = {"1": "[1] \"What did you call me??\"",
                         "2": "[2] Do not engage further."}
             option2 = option_check(options2)
             if option2 == "2":
-                return talked_fish_monger
+                return False
             # Dialogue round 3
             print("\nFISH MONGER: Ha, what are you wandering around here for, "
                   "land lubber? Looking for some fish? Well I don't just go "
-                  "handing out freebies to random weaklings.")
+                  "handing out freebies to random weaklings.\n")
             options3 = {"1": "[1] \"Fight me!!\"",
                         "2": "[2] \"I don't have time for this...\""}
             option3 = option_check(options3)
             if option3 == "1":
                 self.play_insult_game()
-            return talked_fish_monger
+            # pass
         else:
             if "Fish" not in game.inventory:
                 # Ask to play insult game again
                 print(f"\nFISH MONGER: {game.player_name} the loser back "
-                      f"again for another round?")
+                      f"again for another round?\n")
                 options4 = {"1": "[1] \"I'll beat you this time!\"",
                             "2": "[2] Hiss and walk away."}
                 option4 = option_check(options4)
@@ -313,7 +311,6 @@ class NPC:
                 # Fish already in player inventory
                 print("\nFISH MONGER: Why can't you just leave me and my "
                       "clarinet alone?")
-            return talked_fish_monger
 
     def play_insult_game(self):
         """Start Insult Game."""
@@ -325,19 +322,63 @@ class NPC:
             fish = game.quest_items.pop(fish_idx)
             game.inventory.append(fish)
 
-    def sushi_eater(self):
+    def sushi_eater(self, sushi_lover):
         """Talk to Sushi Eater."""
-        talked_sushi_eater = True
-        print("\nSUSHI EATER: I just love eating sushi! Don't you?\n")
-        options = {"1": "[1] \"Yes!!\"", "2": "[2] \"No, sushi is vile.\""}
-        option = option_check(options)
-        if option == "1":
-            print("\nSUSHI EATER: Of course! Everyone loves sushi.")
-            return talked_sushi_eater
+        gm.talked_NPC.add("sushi_eater")
+        if not sushi_lover:
+            print("\nSUSHI EATER: I just love eating sushi! Don't you?\n")
+            options = {"1": "[1] \"Yes!!\"", "2": "[2] \"No, sushi is vile.\""}
+            option = option_check(options)
+            if option == "2":
+                print("\nSUSHI EATER: Oh, what a shame..")
+            else:
+                print("\nSUSHI EATER: Of course! Everyone loves sushi.")
+                sushi_lover = True
+                return sushi_lover
         else:
-            print("\nSUSHI EATER: Oh, what a shame..")
-            return talked_sushi_eater
+            sushi_lover = True
+            print("\nSUSHI EATER: Hmm... I see you're gathering sushi "
+                  "ingredients?\n")
+            options2 = {"1": "[1] \"Yeah, I am.\"",
+                        "2": "[2] \"Mind your own business!\""}
+            option2 = option_check(options2)
+            if option2 == "2":
+                return sushi_lover
+            else:
+                print("\nSUSHI EATER: Let's see what you've got...")
+                if not game.inventory:
+                    print("SUSHI EATER: Looks like you've got nothing yet.")
+                else:
+                    for item in game.inventory:
+                        print(f"SUSHI EATER: {item}")
+                if game.quest_items:
+                    print(f"\nSUSHI EATER: You're still missing something. "
+                          f"Need a hint?\n")
+                    options3 = {"1": "[1] \"Sure!\"",
+                                "2": "[2] \"Nah, I can do this on my "
+                                     "own.\""}
+                    option3 = option_check(options3)
+                    if option3 == "2":
+                        print("SUSHI EATER: See ya later then!")
+                        return sushi_lover
+                    else:
+                        # TODO: implement code so that only one hint is shown
+                        if 'Nori' in game.quest_items:
+                            print("SUSHI EATER: You still need something "
+                                  "to wrap the sushi in.")
+                        if 'Rice' in game.quest_items:
+                            print("SUSHI EATER: You're missing the key "
+                                  "ingredient! It's what holds the sushi "
+                                  "together.")
+                        if 'Fish' in game.quest_items:
+                            print("SUSHI EATER: You might want to add "
+                                  "some filling for your sushi.")
+                        return sushi_lover
+                else:
+                    print("SUSHI EATER: You've got all the ingredients!")
+                    return sushi_lover
 
 
 game = SushiQuest()
+gm = Menu()
 game.run_game()

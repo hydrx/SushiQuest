@@ -32,7 +32,7 @@ def option_check(options):
             print("\nThank you for playing SUSHI QUEST!\n>> Leaving game.")
             exit()
         elif option not in options.keys():
-            print(">> Please enter a valid option.")
+            print(">> Please enter a valid option.\n")
             continue
         else:
             return option

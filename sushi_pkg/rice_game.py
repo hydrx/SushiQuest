@@ -1,5 +1,5 @@
 import random
-from sushi_modules.utilities import Header
+from sushi_pkg.utilities import Header
 
 
 class RiceGame:
