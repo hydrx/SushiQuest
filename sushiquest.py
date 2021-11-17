@@ -1,3 +1,5 @@
+import random
+
 from sushi_pkg.utilities import Header, Player, option_check
 from sushi_pkg.rice_game import RiceGame
 from sushi_pkg.insult_game import InsultGame
@@ -362,21 +364,26 @@ class NPC:
                         print("SUSHI EATER: See ya later then!")
                         return sushi_lover
                     else:
-                        # TODO: implement code so that only one hint is shown
-                        if 'Nori' in game.quest_items:
-                            print("SUSHI EATER: You still need something "
-                                  "to wrap the sushi in.")
-                        if 'Rice' in game.quest_items:
-                            print("SUSHI EATER: You're missing the key "
-                                  "ingredient! It's what holds the sushi "
-                                  "together.")
-                        if 'Fish' in game.quest_items:
-                            print("SUSHI EATER: You might want to add "
-                                  "some filling for your sushi.")
+                        hint = self.sushi_hints()
+                        if hint:
+                            print(f"SUSHI EATER: {hint}")
+                        else:
+                            return sushi_lover
                         return sushi_lover
                 else:
-                    print("SUSHI EATER: You've got all the ingredients!")
+                    print("\nSUSHI EATER: You've got all the ingredients!")
                     return sushi_lover
+
+    def sushi_hints(self):
+        hints = {
+            "Nori": "You still need something to wrap the sushi in.",
+            "Rice": "You're missing the key ingredient! It's what holds the "
+                    "sushi together.",
+            "Fish": "You might want to add some filling for your sushi."
+        }
+        available_hints = [value for key, value in hints.items() if
+                           key in game.quest_items]
+        return random.choice(available_hints) if available_hints else False
 
 
 game = SushiQuest()

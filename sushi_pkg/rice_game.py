@@ -12,10 +12,9 @@ class RiceGame:
         Header().print_header("RICE GAME")
         print("RICE FIEND: There are around 16,000 to 20,000 grains of rice "
               "in this sack."
-              "\nYou get two tries to guess how many there are! "
+              "\nYou get three tries to guess how many there are! "
               "I'll round to the nearest thousand.")
-        # print(self.grains * 1000)
-        for i in range(0, 2):
+        for i in range(0, 3):
             while True:
                 self.guess = input(
                     "\nRICE FIEND: How many grains of rice do you think there "
@@ -39,6 +38,3 @@ class RiceGame:
                 print("RICE FIEND: Nope sorry, try again.")
                 continue
         return won_game
-
-
-# RiceGame().run_game()
