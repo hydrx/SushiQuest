@@ -1,3 +1,3 @@
 # SushiQuest
 
-A simple text adventure game. WIP.
+A simple text adventure game to build my Python skills.
