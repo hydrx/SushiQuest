@@ -366,7 +366,7 @@ class NPC:
                     else:
                         hint = self.sushi_hints()
                         if hint:
-                            print(f"SUSHI EATER: {hint}")
+                            print(f"\nSUSHI EATER: {hint}")
                         else:
                             return sushi_lover
                         return sushi_lover
